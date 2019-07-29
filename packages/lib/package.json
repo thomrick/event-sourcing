@@ -1,0 +1,12 @@
+{
+  "name": "@thomrick/event-sourcing",
+  "version": "0.0.0",
+  "description": "A lib to help building event sourced applications",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run -s clean && tsc",
+    "clean": "rm -rf dist/*"
+  },
+  "author": "ThomRick",
+  "license": "MIT"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@thomrick/event-sourcing-samples",
+  "version": "0.0.0",
+  "description": "The event sourcing lib sample examples",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run -s clean && tsc",
+    "clean": "rm -rf dist/*",
+    "test": "jest",
+    "test:watch": "nodemon -w src -e ts --exec 'npm run -s test'"
+  },
+  "author": "ThomRick",
+  "license": "MIT",
+  "dependencies": {
+    "@thomrick/event-sourcing": "^0.0.0"
+  }
+}
