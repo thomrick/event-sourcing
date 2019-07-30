@@ -1,6 +1,5 @@
 import { IEvent } from '@thomrick/event-sourcing';
-import { UserCreated, UserLoggedIn } from '../../../00-common/events';
-import { BasicCredentials, IUserId, UUIDUserId } from '../../../00-common/model';
+import { BasicCredentials, IUserId, UserCreated, UserLoggedIn, UserLoggedOut, UUIDUserId } from '../../../00-common';
 import { SimpleUserAggregate } from './simple-user.aggregate';
 
 describe('SimpleUserAggregate', () => {
@@ -19,16 +18,26 @@ describe('SimpleUserAggregate', () => {
     expect(changes).toContainEqual(new UserLoggedIn(id));
   });
 
+  it('should log out the user', () => {
+    const aggregate = new SimpleUserAggregate(id, credentials);
+
+    aggregate.logOut();
+
+    expect(aggregate.logged).toBeFalsy();
+    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedOut(id));
+  });
+
   it('should rebuild the aggregate from events', () => {
     const events: IEvent[] = [
       new UserCreated(id, credentials),
       new UserLoggedIn(id),
+      new UserLoggedOut(id),
     ];
 
     const aggregate = new SimpleUserAggregate().rebuild(events);
 
     expect(aggregate.id).toEqual(id);
     expect(aggregate.credentials).toEqual(credentials);
-    expect(aggregate.logged).toBeTruthy();
+    expect(aggregate.logged).toBeFalsy();
   });
 });

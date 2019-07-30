@@ -1,9 +1,15 @@
 import { AbstractAggregate, IEvent } from '@thomrick/event-sourcing';
-import { UserCreated, UserLoggedIn } from '../../../00-common/events';
-import { ICredentials, IUserId } from '../../../00-common/model';
-import { IUser } from '../../../00-common/user.interace';
+import {
+  ICredentials,
+  IUser,
+  IUserFeature,
+  IUserId,
+  UserCreated,
+  UserLoggedIn,
+  UserLoggedOut,
+} from '../../../00-common';
 
-export class SimpleUserAggregate extends AbstractAggregate implements IUser {
+export class SimpleUserAggregate extends AbstractAggregate implements IUser, IUserFeature {
   private _id!: IUserId;
   private _credentials!: ICredentials;
   private _logged!: boolean;
@@ -30,12 +36,19 @@ export class SimpleUserAggregate extends AbstractAggregate implements IUser {
     this.applyAndSave(event);
   }
 
+  public logOut(): void {
+    const event = new UserLoggedOut(this._id);
+    this.applyAndSave(event);
+  }
+
   public apply(event: IEvent): SimpleUserAggregate {
     switch (event.name) {
       case UserCreated.name:
         return this.applyUserCreated(event as UserCreated);
       case UserLoggedIn.name:
         return this.applyUserLoggedIn(event as UserLoggedIn);
+      case UserLoggedOut.name:
+        return this.applyUserLoggedOut(event as UserLoggedOut);
       default:
         return this;
     }
@@ -50,6 +63,11 @@ export class SimpleUserAggregate extends AbstractAggregate implements IUser {
 
   private applyUserLoggedIn(event: UserLoggedIn): SimpleUserAggregate {
     this._logged = true;
+    return this;
+  }
+
+  private applyUserLoggedOut(event: UserLoggedOut): SimpleUserAggregate {
+    this._logged = false;
     return this;
   }
 
