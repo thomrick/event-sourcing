@@ -36,6 +36,11 @@ export class SimpleUserAggregate extends AbstractAggregate implements IUser, IUs
     this.applyAndSave(event);
   }
 
+  public logIn(credentials: ICredentials): void {
+    const event = new UserLoggedIn(this._id);
+    this.applyAndSave(event);
+  }
+
   public logOut(): void {
     const event = new UserLoggedOut(this._id);
     this.applyAndSave(event);

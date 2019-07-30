@@ -21,6 +21,8 @@ export class ProjectionUserAggregate extends AbstractProjectionAggregate<UserPro
     this.applyAndSave(event);
   }
 
+  public logIn(credentials: ICredentials): void {}
+
   public logOut(): void {
     const event = new UserLoggedOut(this._projection.id);
     this.applyAndSave(event);

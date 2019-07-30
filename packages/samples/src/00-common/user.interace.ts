@@ -7,5 +7,6 @@ export interface IUser {
 }
 
 export interface IUserFeature {
+  logIn(credentials: ICredentials): void;
   logOut(): void;
 }
