@@ -5,3 +5,7 @@ export interface IUser {
   readonly credentials: ICredentials;
   readonly logged: boolean;
 }
+
+export interface IUserFeature {
+  logOut(): void;
+}

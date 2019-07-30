@@ -1,7 +1,7 @@
-import { RootEvent } from '@thomrick/event-sourcing';
+import { AbstractEvent } from '@thomrick/event-sourcing';
 import { ICredentials, IUserId } from '../model';
 
-export class UserCreated extends RootEvent {
+export class UserCreated extends AbstractEvent {
   public readonly userId: IUserId;
   public readonly credentials: ICredentials;
 

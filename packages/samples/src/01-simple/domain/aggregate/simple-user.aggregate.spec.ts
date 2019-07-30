@@ -7,24 +7,16 @@ describe('SimpleUserAggregate', () => {
   const id: IUserId = UUIDUserId.create();
   const credentials = new BasicCredentials('email', 'password', 'username');
 
-  it('should create a user', () => {
+  it('should create and log in a new user', () => {
     const aggregate = new SimpleUserAggregate(id, credentials);
 
     expect(aggregate.id).toEqual(id);
     expect(aggregate.credentials).toEqual(credentials);
     expect(aggregate.logged).toBeTruthy();
-  });
 
-  it('should add a user created', () => {
-    const aggregate = new SimpleUserAggregate(id, credentials);
-
-    expect(aggregate.uncommittedChanges).toContainEqual(new UserCreated(id, credentials));
-  });
-
-  it('should add a user logged in event', () => {
-    const aggregate = new SimpleUserAggregate(id, credentials);
-
-    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedIn(id));
+    const changes: IEvent[] = aggregate.uncommittedChanges;
+    expect(changes).toContainEqual(new UserCreated(id, credentials));
+    expect(changes).toContainEqual(new UserLoggedIn(id));
   });
 
   it('should rebuild the aggregate from events', () => {

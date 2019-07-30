@@ -1,7 +1,7 @@
 import { AbstractEvent } from '@thomrick/event-sourcing';
 import { IUserId } from '../model';
 
-export class UserLoggedIn extends AbstractEvent {
+export class UserLoggedOut extends AbstractEvent {
   public readonly userId: IUserId;
 
   constructor(userId: IUserId) {
@@ -10,6 +10,6 @@ export class UserLoggedIn extends AbstractEvent {
   }
 
   public get name(): string {
-    return UserLoggedIn.name;
+    return UserLoggedOut.name;
   }
 }

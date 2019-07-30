@@ -1,4 +1,5 @@
-import { IEvent, IProjection, IStateApplier } from '@thomrick/event-sourcing';
+import { AbstractStateApplier, IEvent, IProjection, IStateApplier } from '@thomrick/event-sourcing';
+import { UserCreated, UserLoggedIn } from '../../../00-common';
 import { ICredentials, IUserId } from '../../../00-common/model';
 import { IUser } from '../../../00-common/user.interace';
 
@@ -19,18 +20,30 @@ export class UserProjection implements IProjection, IUser {
     return this._logged;
   }
 
-  public state(): IStateApplier {
-    // return new class StateApplier implements IStateApplier {
-    //   private _projection: UserProjection;
+  public stateApplier(): IStateApplier<UserProjection> {
+    return new class StateApplier extends AbstractStateApplier<UserProjection> {
+      public apply(event: IEvent): UserProjection {
+        switch (event.name) {
+          case UserCreated.name:
+            return this.applyUserCreated(event as UserCreated);
+          case UserLoggedIn.name:
+            return this.applyUserLoggedIn(event as UserLoggedIn);
+          default:
+            return this.projection;
+        }
+      }
 
-    //   constructor(projection: UserProjection) {
-    //     this._projection = projection;
-    //   }
+      public applyUserCreated(event: UserCreated): UserProjection {
+        this.projection._id = event.userId;
+        this.projection._credentials = event.credentials;
+        return this.projection;
+      }
 
-    //   public apply(event: IEvent): UserProjection {
-    //     return this._projection;
-    //   }
-    // }(this);
-    throw new Error('Method not implemented');
+      public applyUserLoggedIn(event: UserLoggedIn): UserProjection {
+        this.projection._logged = true;
+        return this.projection;
+      }
+
+    }(this);
   }
 }
