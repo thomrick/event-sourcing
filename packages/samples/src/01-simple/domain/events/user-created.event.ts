@@ -1,14 +1,11 @@
 import { IEvent } from '@thomrick/event-sourcing';
+import { ICredentials } from '../model';
 
 export class UserCreated implements IEvent {
-  public readonly email: string;
-  public readonly password: string;
-  public readonly username: string;
+  public readonly credentials: ICredentials;
 
-  constructor(email: string, password: string, username: string) {
-    this.email = email;
-    this.password = password;
-    this.username = username;
+  constructor(credentials: ICredentials) {
+    this.credentials = credentials;
   }
 
   public get name(): string {

@@ -1,21 +1,18 @@
 import { IEvent, RootAggregate } from '@thomrick/event-sourcing';
 import { UserCreated } from '../events';
+import { ICredentials } from '../model';
 import { IUser } from '../user.interace';
 
 export class UserAggregate extends RootAggregate implements IUser {
-  private _email!: string;
-  private _password!: string;
-  private _username!: string;
+  private _credentials!: ICredentials;
 
-  private constructor(email: string, password: string, username: string) {
+  public constructor(credentials?: ICredentials) {
     super();
-    const event = new UserCreated(email, password, username);
-    this.apply(event);
-    this.save(event);
-  }
-
-  public static with(email: string, password: string, username: string): UserAggregate {
-    return new UserAggregate(email, password, username);
+    if (!!credentials) {
+      const event = new UserCreated(credentials);
+      this.apply(event);
+      this.save(event);
+    }
   }
 
   public apply(event: IEvent): UserAggregate {
@@ -28,25 +25,19 @@ export class UserAggregate extends RootAggregate implements IUser {
   }
 
   private applyUserCreated(event: UserCreated): UserAggregate {
-    this._email = event.email;
-    this._password = event.password;
-    this._username = event.username;
+    this._credentials = event.credentials;
     return this;
   }
 
-  public get email(): string {
-    return this._email;
+  public rebuild(events: IEvent[]): UserAggregate {
+    return new UserAggregate();
   }
 
-  public get password(): string {
-    return this._password;
-  }
-
-  public get username(): string {
-    return this._username;
+  public get credentials(): ICredentials {
+    return this._credentials;
   }
 
   public get logged(): boolean {
-    return true;
+    return false;
   }
 }

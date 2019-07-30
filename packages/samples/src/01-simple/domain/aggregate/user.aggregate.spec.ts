@@ -1,23 +1,31 @@
+import { IEvent } from '@thomrick/event-sourcing';
 import { UserCreated } from '../events';
+import { BasicCredentials } from '../model';
 import { UserAggregate } from './user.aggregate';
 
 describe('UserAggregate', () => {
-  const email: string = 'email';
-  const password: string = 'password';
-  const username: string = 'username';
+  const credentials = new BasicCredentials('email', 'password', 'username');
 
   it('should create a user', () => {
-    const aggregate = UserAggregate.with(email, password, username);
+    const aggregate = new UserAggregate(credentials);
 
-    expect(aggregate.email).toEqual(email);
-    expect(aggregate.password).toEqual(password);
-    expect(aggregate.username).toEqual(username);
-    expect(aggregate.logged).toBeTruthy();
+    expect(aggregate.credentials).toEqual(credentials);
+    expect(aggregate.logged).toBeFalsy();
   });
 
   it('should add a user created', () => {
-    const aggregate = UserAggregate.with(email, password, username);
+    const aggregate = new UserAggregate(credentials);
 
-    expect(aggregate.uncommittedChanges).toContainEqual(new UserCreated(email, password, username));
+    expect(aggregate.uncommittedChanges).toContainEqual(new UserCreated(credentials));
+  });
+
+  it('should rebuild the aggregate from events', () => {
+    const events: IEvent[] = [
+      new UserCreated(credentials),
+    ];
+
+    const aggregate = new UserAggregate().rebuild(events);
+
+    expect(aggregate.credentials).toEqual(credentials);
   });
 });
