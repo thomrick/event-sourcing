@@ -12,6 +12,10 @@
   "author": "ThomRick",
   "license": "MIT",
   "dependencies": {
-    "@thomrick/event-sourcing": "^0.0.0"
+    "@thomrick/event-sourcing": "^0.0.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^3.4.5"
   }
 }

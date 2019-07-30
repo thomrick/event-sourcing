@@ -6,8 +6,8 @@ export abstract class RootAggregate implements IAggregate {
 
   public abstract apply(event: IEvent): IAggregate;
 
-  public rebuild(events: IEvent[]): IAggregate {
-    return events.reduce((aggregate, event) => event.apply(aggregate), this as IApplicable) as IAggregate;
+  public rebuild(events: IEvent[]): this {
+    return events.reduce((aggregate, event) => event.apply(aggregate), this as IApplicable) as this;
   }
 
   protected save(event: IEvent): void {

@@ -1,15 +1,14 @@
-import { IApplicable, IEvent } from '@thomrick/event-sourcing';
-import { ICredentials } from '../model';
+import { RootEvent } from '@thomrick/event-sourcing';
+import { ICredentials, IUserId } from '../model';
 
-export class UserCreated implements IEvent {
+export class UserCreated extends RootEvent {
+  public readonly userId: IUserId;
   public readonly credentials: ICredentials;
 
-  constructor(credentials: ICredentials) {
+  constructor(userId: IUserId, credentials: ICredentials) {
+    super();
+    this.userId = userId;
     this.credentials = credentials;
-  }
-
-  public apply(applicable: IApplicable): IApplicable {
-    return applicable.apply(this);
   }
 
   public get name(): string {
