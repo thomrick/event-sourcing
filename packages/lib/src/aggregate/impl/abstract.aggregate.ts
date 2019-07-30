@@ -1,7 +1,7 @@
-import { IApplicable, IEvent } from '../event';
-import { IAggregate } from './aggregate.interface';
+import { IApplicable, IEvent } from '../../event';
+import { IAggregate } from '../aggregate.interface';
 
-export abstract class RootAggregate implements IAggregate {
+export abstract class AbstractAggregate implements IAggregate {
   private readonly _uncommittedChanges: IEvent[] = [];
 
   public abstract apply(event: IEvent): IAggregate;

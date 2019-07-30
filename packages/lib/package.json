@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run -s clean && tsc",
-    "clean": "rm -rf dist/*"
+    "clean": "rm -rf dist/*",
+    "test": "jest --passWithNoTests",
+    "test:watch": "nodemon -w src -e ts --exec 'npm run -s test'"
   },
   "author": "ThomRick",
   "license": "MIT"

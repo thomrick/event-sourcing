@@ -1,2 +1,2 @@
-export * from './aggregate.interface';
-export * from './root.aggregate';
+export * from './root-aggregate.interface';
+export * from './impl';
