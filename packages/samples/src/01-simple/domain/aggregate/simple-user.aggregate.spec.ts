@@ -1,5 +1,13 @@
 import { IEvent } from '@thomrick/event-sourcing';
-import { BasicCredentials, IUserId, UserCreated, UserLoggedIn, UserLoggedOut, UUIDUserId } from '../../../00-common';
+import {
+  BasicCredentials,
+  IUserId,
+  UserCreated,
+  UserLoggedIn,
+  UserLoggedOut,
+  UUIDUserId,
+  WrongCredentialsException,
+} from '../../../00-common';
 import { SimpleUserAggregate } from './simple-user.aggregate';
 
 describe('SimpleUserAggregate', () => {
@@ -18,25 +26,6 @@ describe('SimpleUserAggregate', () => {
     expect(changes).toContainEqual(new UserLoggedIn(id));
   });
 
-  it('should log out the user', () => {
-    const aggregate = new SimpleUserAggregate(id, credentials);
-
-    aggregate.logOut();
-
-    expect(aggregate.logged).toBeFalsy();
-    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedOut(id));
-  });
-
-  it('should log in the user', () => {
-    const aggregate = new SimpleUserAggregate(id, credentials);
-    aggregate.logOut();
-
-    aggregate.logIn(credentials);
-
-    expect(aggregate.logged).toBeTruthy();
-    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedIn(id));
-  });
-
   it('should rebuild the aggregate from events', () => {
     const events: IEvent[] = [
       new UserCreated(id, credentials),
@@ -49,5 +38,39 @@ describe('SimpleUserAggregate', () => {
     expect(aggregate.id).toEqual(id);
     expect(aggregate.credentials).toEqual(credentials);
     expect(aggregate.logged).toBeFalsy();
+  });
+
+  it('should log out the user', () => {
+    const aggregate = new SimpleUserAggregate().rebuild([
+      new UserCreated(id, credentials),
+      new UserLoggedIn(id),
+    ]);
+
+    aggregate.logOut();
+
+    expect(aggregate.logged).toBeFalsy();
+    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedOut(id));
+  });
+
+  it('should log in the user', () => {
+    const aggregate = new SimpleUserAggregate().rebuild([
+      new UserCreated(id, credentials),
+    ]);
+
+    aggregate.logIn(credentials);
+
+    expect(aggregate.logged).toBeTruthy();
+    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedIn(id));
+  });
+
+  it('should throw a wrong credentials exception', () => {
+    const aggregate = new SimpleUserAggregate().rebuild([
+      new UserCreated(id, credentials),
+    ]);
+
+    expect(
+      () => aggregate.logIn(new BasicCredentials('email', 'wrongPassword', 'username')),
+    )
+    .toThrow(WrongCredentialsException);
   });
 });

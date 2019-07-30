@@ -7,6 +7,7 @@ import {
   UserCreated,
   UserLoggedIn,
   UserLoggedOut,
+  WrongCredentialsException,
 } from '../../../00-common';
 
 export class SimpleUserAggregate extends AbstractAggregate implements IUser, IUserFeature {
@@ -37,6 +38,9 @@ export class SimpleUserAggregate extends AbstractAggregate implements IUser, IUs
   }
 
   public logIn(credentials: ICredentials): void {
+    if (!this._credentials.compare(credentials)) {
+      throw new WrongCredentialsException();
+    }
     const event = new UserLoggedIn(this._id);
     this.applyAndSave(event);
   }
