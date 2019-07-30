@@ -1,6 +1,5 @@
-import { IEvent } from '../event';
+import { IApplicable, IEvent } from '../event';
 
-export interface IAggregate {
+export interface IAggregate extends IApplicable {
   readonly uncommittedChanges: IEvent[];
-  apply(event: IEvent): IAggregate;
 }
