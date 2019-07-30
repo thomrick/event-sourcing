@@ -1,4 +1,4 @@
-import { IApplicable, IEvent } from '../../event';
+import { IEvent } from '../../event';
 import { IAggregate } from '../aggregate.interface';
 
 export abstract class AbstractAggregate implements IAggregate {
@@ -7,10 +7,16 @@ export abstract class AbstractAggregate implements IAggregate {
   public abstract apply(event: IEvent): IAggregate;
 
   public rebuild(events: IEvent[]): this {
-    return events.reduce((aggregate, event) => event.apply(aggregate), this as IApplicable) as this;
+    return events.reduce((aggregate: IAggregate, event: IEvent) => event.apply(aggregate), this) as this;
   }
 
-  protected save(event: IEvent): void {
+  protected applyAndSave(event: IEvent): IAggregate {
+    this.apply(event);
+    this.save(event);
+    return this;
+  }
+
+  private save(event: IEvent): void {
     this._uncommittedChanges.push(event);
   }
 

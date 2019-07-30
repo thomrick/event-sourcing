@@ -1,4 +1,6 @@
-import { IApplicable } from '../event';
+import { IEvent } from '../event';
+import { IProjection } from '../projection';
 
-// tslint:disable-next-line: no-empty-interface
-export interface IStateApplier extends IApplicable {}
+export interface IStateApplier<T extends IProjection> {
+  apply(event: IEvent): T;
+}
