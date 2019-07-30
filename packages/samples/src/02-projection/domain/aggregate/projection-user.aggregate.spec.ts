@@ -1,5 +1,13 @@
 import { IEvent } from '@thomrick/event-sourcing';
-import { BasicCredentials, ICredentials, IUserId, UserCreated, UserLoggedIn, UUIDUserId } from '../../../00-common';
+import {
+  BasicCredentials,
+  ICredentials,
+  IUserId,
+  UserCreated,
+  UserLoggedIn,
+  UserLoggedOut,
+  UUIDUserId,
+} from '../../../00-common';
 import { ProjectionUserAggregate } from './projection-user.aggregate';
 
 describe('ProjectionUserAggregate', () => {
@@ -16,6 +24,15 @@ describe('ProjectionUserAggregate', () => {
     const changes: IEvent[] = aggregate.uncommittedChanges;
     expect(changes).toContainEqual(new UserCreated(id, credentials));
     expect(changes).toContainEqual(new UserLoggedIn(id));
+  });
+
+  it('should log out the user', () => {
+    const aggregate = new ProjectionUserAggregate(id, credentials);
+
+    aggregate.logOut();
+
+    expect(aggregate.projection.logged).toBeFalsy();
+    expect(aggregate.uncommittedChanges).toContainEqual(new UserLoggedOut(id));
   });
 
   it('should rebuild the aggregate from events', () => {

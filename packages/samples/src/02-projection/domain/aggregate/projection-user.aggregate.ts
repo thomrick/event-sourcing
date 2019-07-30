@@ -1,8 +1,8 @@
 import { AbstractProjectionAggregate } from '@thomrick/event-sourcing';
-import { ICredentials, IUserId, UserCreated, UserLoggedIn } from '../../../00-common';
+import { ICredentials, IUserFeature, IUserId, UserCreated, UserLoggedIn, UserLoggedOut } from '../../../00-common';
 import { UserProjection } from '../projection';
 
-export class ProjectionUserAggregate extends AbstractProjectionAggregate<UserProjection> {
+export class ProjectionUserAggregate extends AbstractProjectionAggregate<UserProjection> implements IUserFeature {
   constructor(id?: IUserId, credentials?: ICredentials) {
     super(new UserProjection());
     if (!!id && !!credentials) {
@@ -18,6 +18,11 @@ export class ProjectionUserAggregate extends AbstractProjectionAggregate<UserPro
 
   private logInUser(): void {
     const event = new UserLoggedIn(this._projection.id);
+    this.applyAndSave(event);
+  }
+
+  public logOut(): void {
+    const event = new UserLoggedOut(this._projection.id);
     this.applyAndSave(event);
   }
 }

@@ -1,5 +1,5 @@
 import { AbstractStateApplier, IEvent, IProjection, IStateApplier } from '@thomrick/event-sourcing';
-import { UserCreated, UserLoggedIn } from '../../../00-common';
+import { UserCreated, UserLoggedIn, UserLoggedOut } from '../../../00-common';
 import { ICredentials, IUserId } from '../../../00-common/model';
 import { IUser } from '../../../00-common/user.interace';
 
@@ -28,6 +28,8 @@ export class UserProjection implements IProjection, IUser {
             return this.applyUserCreated(event as UserCreated);
           case UserLoggedIn.name:
             return this.applyUserLoggedIn(event as UserLoggedIn);
+          case UserLoggedOut.name:
+            return this.applyUserLoggedOut(event as UserLoggedOut);
           default:
             return this.projection;
         }
@@ -41,6 +43,11 @@ export class UserProjection implements IProjection, IUser {
 
       public applyUserLoggedIn(event: UserLoggedIn): UserProjection {
         this.projection._logged = true;
+        return this.projection;
+      }
+
+      public applyUserLoggedOut(event: UserLoggedOut): UserProjection {
+        this.projection._logged = false;
         return this.projection;
       }
 

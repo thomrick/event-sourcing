@@ -6,6 +6,7 @@ import {
   IUserId,
   UserCreated,
   UserLoggedIn,
+  UserLoggedOut,
   UUIDUserId,
 } from '../../../00-common';
 import { UserProjection } from './user.projection';
@@ -30,6 +31,15 @@ describe('UserProjection', () => {
     projection.stateApplier().apply(new UserLoggedIn(id));
 
     expect(projection.logged).toBeTruthy();
+  });
+
+  it('should apply user logged out event', () => {
+    const projection: IUser & IProjection = new UserProjection();
+    projection.stateApplier().apply(new UserLoggedIn(id));
+
+    projection.stateApplier().apply(new UserLoggedOut(id));
+
+    expect(projection.logged).toBeFalsy();
   });
 
 });
