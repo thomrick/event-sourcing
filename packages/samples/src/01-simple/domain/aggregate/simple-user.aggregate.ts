@@ -1,9 +1,9 @@
 import { IEvent, RootAggregate } from '@thomrick/event-sourcing';
-import { UserCreated, UserLoggedIn } from '../events';
-import { ICredentials, IUserId } from '../model';
-import { IUser } from '../user.interace';
+import { UserCreated, UserLoggedIn } from '../../../00-common/events';
+import { ICredentials, IUserId } from '../../../00-common/model';
+import { IUser } from '../../../00-common/user.interace';
 
-export class UserAggregate extends RootAggregate implements IUser {
+export class SimpleUserAggregate extends RootAggregate implements IUser {
   private _id!: IUserId;
   private _credentials!: ICredentials;
   private _logged!: boolean;
@@ -32,7 +32,7 @@ export class UserAggregate extends RootAggregate implements IUser {
     this.save(event);
   }
 
-  public apply(event: IEvent): UserAggregate {
+  public apply(event: IEvent): SimpleUserAggregate {
     switch (event.name) {
       case UserCreated.name:
         return this.applyUserCreated(event as UserCreated);
@@ -43,14 +43,14 @@ export class UserAggregate extends RootAggregate implements IUser {
     }
   }
 
-  private applyUserCreated(event: UserCreated): UserAggregate {
+  private applyUserCreated(event: UserCreated): SimpleUserAggregate {
     this._id = event.userId;
     this._credentials = event.credentials;
     this._logged = false;
     return this;
   }
 
-  private applyUserLoggedIn(event: UserLoggedIn): UserAggregate {
+  private applyUserLoggedIn(event: UserLoggedIn): SimpleUserAggregate {
     this._logged = true;
     return this;
   }
