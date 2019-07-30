@@ -1,5 +1,13 @@
 import { AbstractProjectionAggregate } from '@thomrick/event-sourcing';
-import { ICredentials, IUserFeature, IUserId, UserCreated, UserLoggedIn, UserLoggedOut } from '../../../00-common';
+import {
+  ICredentials,
+  IUserFeature,
+  IUserId,
+  UserCreated,
+  UserLoggedIn,
+  UserLoggedOut,
+  WrongCredentialsException,
+} from '../../../00-common';
 import { UserProjection } from '../projection';
 
 export class ProjectionUserAggregate extends AbstractProjectionAggregate<UserProjection> implements IUserFeature {
@@ -22,6 +30,9 @@ export class ProjectionUserAggregate extends AbstractProjectionAggregate<UserPro
   }
 
   public logIn(credentials: ICredentials): void {
+    if (!this._projection.credentials.compare(credentials)) {
+      throw new WrongCredentialsException();
+    }
     const event = new UserLoggedIn(this._projection.id);
     this.applyAndSave(event);
   }
