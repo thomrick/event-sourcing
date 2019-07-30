@@ -1,5 +1,5 @@
 import { IStateApplier } from '../state-applier';
 
 export interface IProjection {
-  stateApplier(): IStateApplier;
+  stateApplier(): IStateApplier<IProjection>;
 }

@@ -5,5 +5,5 @@ import { IStateApplier } from '../state-applier';
 export interface IEvent {
   readonly name: string;
   apply(aggregate: IAggregate): IAggregate;
-  apply(state: IStateApplier): IProjection;
+  apply(state: IStateApplier<IProjection>): IProjection;
 }
