@@ -1,4 +1,4 @@
-import { IEvent } from '@thomrick/event-sourcing';
+import { IApplicable, IEvent } from '@thomrick/event-sourcing';
 import { ICredentials } from '../model';
 
 export class UserCreated implements IEvent {
@@ -6,6 +6,10 @@ export class UserCreated implements IEvent {
 
   constructor(credentials: ICredentials) {
     this.credentials = credentials;
+  }
+
+  public apply(applicable: IApplicable): IApplicable {
+    return applicable.apply(this);
   }
 
   public get name(): string {

@@ -29,10 +29,6 @@ export class UserAggregate extends RootAggregate implements IUser {
     return this;
   }
 
-  public rebuild(events: IEvent[]): UserAggregate {
-    return new UserAggregate();
-  }
-
   public get credentials(): ICredentials {
     return this._credentials;
   }
