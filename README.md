@@ -269,28 +269,36 @@ export class UserProjection implements IProjection {
 }
 
 // src/domain/aggregates/user.aggregate.ts
-import { IAggregate, IEvent } from '@thomrick/event-sourcing';
+import { IProjectionAggregate, IEvent } from '@thomrick/event-sourcing';
 import { UserCreated } from '../events';
+import { UserProjection } from '../projections';
 
-export class UserAggregate implements IAggregate {
+export class UserAggregate implements IProjectionAggregate<UserProjection> {
   private readonly _uncommittedChanges: IEvent[] = [];
   private _projection: UserProjection;
 
   constructor(id?: string, email?: string, password?: string, username?: string) {
     if (!!id && !!email && !!pasword && !!username) {
       const event = new UserCreated(id, email, password, username);
-      this.apply(event);
-      this.save(event);
+      this.applyAndSave(event);  
     }
   }
 
-  public apply(event: IEvent): UserAggregate {
-    this._projection.stateApplier().apply(event);
-    return this;
+  public rebuild(events: IEvent): UserAggregate {
+    return events.reduce((projection, event) => event.apply(projection.stateApplier()), this._projection);
   }
 
-  public rebuild(events: IEvent): UserAggregate {
-    return events.reduce((aggregate, event) => event.apply(aggregate), this);
+  private applyAndSave(event: IEvent): void {
+    this.apply(event);
+    this.save(event);
+  }
+  
+  private apply(event: IEvent): void {
+    this._projection.stateApplier().apply(event);
+  }
+
+  private save(event: IEvent): void {
+    this._uncommittedChanges.push(event);
   }
 
   public get uncommittedChanges(): IEvent {
@@ -309,8 +317,6 @@ export class UserAggregate implements IAggregate {
 ```typescript
 // src/domain/events/user-created.event.ts
 import { AbstractEvent } from '@thomrick/event-sourcing';
-import { UserAggregate } from '../aggregates';
-import { UserProjection } from '../projections';
 
 export class UserCreated implements AbstractEvent {
   public readonly id: string;
@@ -379,8 +385,9 @@ export class UserProjection implements IProjection {
 }
 
 // src/domain/aggregates/user.aggregate.ts
-import { IAggregate, IEvent } from '@thomrick/event-sourcing';
+import { AbstractProjectionAggregate, IAggregate, IEvent } from '@thomrick/event-sourcing';
 import { UserCreated } from '../events';
+import { UserProjection } from '../projections';
 
 export class UserAggregate extends AbstractProjectionAggregate<UserProjection> {
   constructor(id?: string, email?: string, password?: string, username?: string) {
